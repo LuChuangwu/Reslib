@@ -1,0 +1,57 @@
+  private string GetPath(XmlElement element)
+        {
+            
+            if (((XmlElement)element.ParentNode.ParentNode).GetAttribute("Name")=="Layer")
+            {
+                return ((XmlElement)element.ParentNode.ParentNode).GetAttribute("Name") + "/" + element.GetAttribute("Name");
+
+            }else
+            {
+                return GetPath((XmlElement)element.ParentNode.ParentNode) + "/" + element.GetAttribute("Name"); ;
+            }
+        }
+        private XmlNode GetTargetNode(string name,XmlNodeList list)
+        {
+            
+
+            foreach (XmlElement item in list)
+            {
+               
+                if (item.GetAttribute("Name")==name.Split('/')[0])
+                {
+                    if ( name.Split('/').Length>1)
+                    {
+                        if (item.SelectSingleNode("Children") != null)
+                        {
+                            string new_name = name.Remove(0, name.Split('/')[0].Length + 1);
+
+                            GetTargetNode(new_name, item.SelectSingleNode("Children").ChildNodes);
+
+                        }
+                    }
+                    else
+                    {
+                        return item.ParentNode.ParentNode;
+                    }
+                    
+                   
+
+
+                }
+            }
+            return null;
+        }
+
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            int index = this.heng_list.SelectedIndex;
+            XmlElement element = (XmlElement)nodes[index];
+           string single_noide_path=(GetPath((XmlElement)element));
+            single_noide_path= single_noide_path.Remove(0, single_noide_path.Split('/')[0].Length + 1);
+           // System.Windows.MessageBox.Show(single_noide_path);
+          GetTargetNode(single_noide_path, heng_xml.SelectSingleNode("GameFile/Content/Content/ObjectData/Children").ChildNodes);
+           
+
+
+        }
